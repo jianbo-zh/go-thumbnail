@@ -1,13 +1,163 @@
 package image
 
+import (
+	"fmt"
+	"image"
+	"strings"
+
+	"gocv.io/x/gocv"
+
+	"github.com/penglonghua/go-image/internal/file"
+)
+
 type FileResult struct {
-	Path          string // 文件路径
-	Mimetype      string // 文件类型 这个地方就可以判断出该文件的类型是图片/视频/...
-	ThumbnailData []byte // 缩略图 的数据 有缩放操作 (图片和视频都有)  缩放的尺寸 (最大不超过120)
-	CoverData     []byte // 封面，没有缩放，原尺寸大小 用于视频播放前的预览 (只有视频才有)
+	SrcPath  string // 文件路径
+	Mimetype string // 文件类型 这个地方就可以判断出该文件的类型是图片/视频/...
+	//ThumbnailData []byte // 缩略图 的数据 有缩放操作 (图片和视频都有)  缩放的尺寸 (最大不超过120)
+	//CoverData     []byte // 封面，没有缩放，原尺寸大小 用于视频播放前的预览 (只有视频才有)
+	ThumbnailData gocv.Mat // 缩略图 的数据 有缩放操作 (图片和视频都有)  缩放的尺寸 (最大不超过120)
+	CoverData     gocv.Mat // 封面，没有缩放，原尺寸大小 用于视频播放前的预览 (只有视频才有)
 }
 
 func Image(filePath string) (*FileResult, error) {
 
-	return nil, nil
+	if filePath == "" || strings.TrimSpace(filePath) == "" {
+		return nil, ErrFilePathInvalid
+	}
+
+	if !file.Exists(filePath) {
+		return nil, ErrFileNotExist
+	}
+
+	if file.IsDir(filePath) {
+		return nil, ErrNotSupportDirectory
+	}
+
+	if !file.IsFile(filePath) {
+		return nil, ErrIsNotFile // 应该不会发生
+	}
+
+	// 确定了一个已经存在的文件
+	m, err := file.DetectFile(filePath)
+	if err != nil {
+		return nil, ErrNotSupportFileCheckMimetype // 不支持的文件类型检查 ,只有检查到了才可以
+	}
+
+	// 下面有3种
+	// 1 是 图片, 2 是视频， 3 是其他的
+	mimeType := m.String()
+
+	if strings.HasPrefix(mimeType, "image") {
+		// opencv截图 缩略图
+		src := gocv.IMRead(filePath, gocv.IMReadColor)
+		if src.Empty() {
+			return nil, ErrGoCVInner
+		}
+
+		dst := gocv.NewMat()
+		//defer dst.Close() // 清空指针和数据 ,一旦清空，返回值就没有了, 如果清空，内存会存在泄漏
+
+		// 缩略图
+		//gocv.Resize(src, &dst, image.Point{}, 0.5, 0.5, gocv.InterpolationDefault)
+		gocv.Resize(src, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
+
+		r := &FileResult{
+			SrcPath:       filePath,
+			Mimetype:      mimeType,
+			ThumbnailData: dst,
+			//CoverData:     dst,
+		}
+
+		fmt.Println("是否有数据: ", len(dst.ToBytes()))
+
+		return r, nil
+
+	} else if strings.HasPrefix(mimeType, "video") {
+		// 视频 封面 +  缩略图
+		webcam, err := gocv.VideoCaptureFile(filePath)
+		if err != nil {
+			fmt.Printf("Error opening video capture device: %v\n", filePath)
+			return nil, ErrGoCVInner
+		}
+		defer webcam.Close()
+
+		img := gocv.NewMat()
+		//defer img.Close()
+
+		r := &FileResult{
+			SrcPath:  filePath,
+			Mimetype: mimeType,
+			//ThumbnailData: &dst,
+			//CoverData:     nil,
+		}
+
+		for {
+			ok := webcam.Read(&img)
+			if ok {
+				if !img.Empty() {
+
+					r.CoverData = img
+
+					dst := gocv.NewMat()
+
+					// 缩略图
+					gocv.Resize(img, &dst, image.Point{}, 0.5, 0.5, gocv.InterpolationDefault)
+					r.ThumbnailData = dst // 缩略图
+					r.CoverData = img     // 原图
+
+					//dst.Close()
+
+					break
+				}
+			}
+		}
+
+		return r, nil
+
+	} else {
+		// 其他的不支持
+		return nil, ErrNotSupportFile4Img // 不能从该文件中获取到 图片, 比如 从mp3文件里，是截不了图的
+	}
+
+	return nil, nil // 这个地方应该不会执行到
+}
+
+// Save2Jpg 保存进文件
+func Save2Jpg(f *FileResult, thumbnailSaveFile string, coverSaveFile string) error {
+
+	if f == nil {
+		return ErrSave2Jpg
+	}
+
+	if strings.HasPrefix(f.Mimetype, "image") {
+		if ok := gocv.IMWrite(thumbnailSaveFile, f.ThumbnailData); !ok {
+			return ErrSave2Jpg
+		}
+	} else if strings.HasPrefix(f.Mimetype, "video") {
+		if ok := gocv.IMWrite(thumbnailSaveFile, f.ThumbnailData); !ok {
+			return ErrSave2Jpg
+		}
+		if ok := gocv.IMWrite(coverSaveFile, f.CoverData); !ok {
+			return ErrSave2Jpg
+		}
+	} else {
+		return ErrNotSupportFile4Img
+	}
+
+	// 使用完后之后，需要关闭 ，否则会有内存泄漏
+	defer Close(f)
+
+	return nil
+
+}
+
+func Close(f *FileResult) {
+
+	if f != nil {
+
+		f.ThumbnailData.Close()
+		f.CoverData.Close()
+
+	}
+
 }
