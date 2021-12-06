@@ -9,6 +9,7 @@ func TestSave2Jpg(t *testing.T) {
 
 	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 
+	// 只截图，不保存
 	f, err := Image(srcFile)
 
 	if err != nil {
@@ -19,6 +20,7 @@ func TestSave2Jpg(t *testing.T) {
 	thFile := "/Users/apple/workspace_stariverpool/go-image/testdata/output/opencv-logo1.jpg"
 	coverFile := "/Users/apple/workspace_stariverpool/go-image/testdata/output/opencv-logo2.jpg"
 
+	// 保存到 指定目录
 	if err = Save2Jpg(f, thFile, coverFile); err != nil {
 		fmt.Println(err)
 		return

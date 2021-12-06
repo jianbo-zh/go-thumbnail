@@ -7,3 +7,43 @@ go-image
 
 
 
+
+一般情况下 只要 opencv和FFMpeg 能够处理，这个地方就能处理。 
+## 支持的图片
+
+
+## 暂时不支持的图片格式 
+
+* HEIF(.heic)  （后期版本）
+
+
+## 支持的视频
+
+## 不支持的视频
+
+
+
+## 环境问题
+
+这个地方推荐使用
+
+CPU版本
+
+```text
+docker pull gocv/opencv:4.5.4
+
+```
+
+
+
+gpu版本 cuda11, cuda10 需要根据 响应的 显卡环境来.
+```text
+
+docker pull gocv/opencv:4.5.4-gpu-cuda-11
+docker pull gocv/opencv:4.5.4-gpu-cuda-10
+
+```
+
+
+
+

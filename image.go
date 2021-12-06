@@ -68,7 +68,7 @@ func Image(filePath string) (*FileResult, error) {
 			//CoverData:     dst,
 		}
 
-		fmt.Println("是否有数据: ", len(dst.ToBytes()))
+		//fmt.Println("是否有数据: ", len(dst.ToBytes()))
 
 		return r, nil
 

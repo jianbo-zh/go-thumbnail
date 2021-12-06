@@ -8,9 +8,9 @@ import (
 
 func main() {
 
-	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
+	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/other/mp4/1.mp4"
-	srcFile := "testdata/other/heif/bafybeievjz3aiygjtz343alfiypforxfjeikmt3q4cnek3dtz2jo6s2epy.heic"
+	//srcFile := "testdata/other/heif/bafybeievjz3aiygjtz343alfiypforxfjeikmt3q4cnek3dtz2jo6s2epy.heic"
 
 	f, err := image.Image(srcFile)
 
