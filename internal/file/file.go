@@ -29,3 +29,8 @@ func IsDir(path string) bool {
 func IsFile(path string) bool {
 	return !IsDir(path)
 }
+
+// GetSystemTmp
+func GetSystemTmp() string {
+	return "/tmp"
+}
