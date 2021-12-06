@@ -29,3 +29,19 @@ func TestSave2Jpg(t *testing.T) {
 	fmt.Println("保存成功")
 
 }
+
+func TestImageAndSave(t *testing.T) {
+	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
+
+	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/other/mp4/1.mp4"
+	// 只截图，不保存
+	f, err := ImageAndSave(srcFile, "/Users/apple/workspace_stariverpool/go-image/testdata/output/")
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(f.ThumbnailImgPath, f.CoverImgPath)
+
+}
