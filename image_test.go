@@ -33,7 +33,8 @@ func TestSave2Jpg(t *testing.T) {
 func TestImageAndSave(t *testing.T) {
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 
-	srcFile := "/Users/apple/Desktop/video/bafybeic5x7c6bv56t7kg25y57ohmm7ffnfdmleq423ln3xvh4xtll5tpjm.mp4"
+	//srcFile := "/Users/apple/Desktop/video/bafybeic5x7c6bv56t7kg25y57ohmm7ffnfdmleq423ln3xvh4xtll5tpjm.mp4"
+	srcFile := "/Users/apple/Desktop/video/black2.mp4"
 	// 只截图，不保存
 	f, err := ImageAndSave(srcFile, "/Users/apple/workspace_stariverpool/go-image/testdata/output/")
 

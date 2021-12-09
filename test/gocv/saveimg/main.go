@@ -20,7 +20,8 @@ func main() {
 	fmt.Printf("gocv version: %s\n", gocv.Version())
 	fmt.Printf("opencv lib version: %s\n", gocv.OpenCVVersion())
 
-	filename := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
+	//filename := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
+	filename := "/Users/apple/Desktop/video/black.mp4 "
 	img := gocv.IMRead(filename, gocv.IMReadAnyColor)
 
 	if img.Empty() {

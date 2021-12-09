@@ -63,8 +63,8 @@ func Image(filePath string) (*FileResult, error) {
 		//defer dst.Close() // 清空指针和数据 ,一旦清空，返回值就没有了, 如果清空，内存会存在泄漏
 
 		// 缩略图
-		//gocv.Resize(src, &dst, image.Point{}, 0.5, 0.5, gocv.InterpolationDefault)
-		gocv.Resize(src, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
+		gocv.Resize(src, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault)
+		//gocv.Resize(src, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
 
 		r := &FileResult{
 			SrcPath:       filePath,
@@ -106,7 +106,7 @@ func Image(filePath string) (*FileResult, error) {
 					dst := gocv.NewMat()
 
 					// 缩略图
-					gocv.Resize(img, &dst, image.Point{}, 0.5, 0.5, gocv.InterpolationDefault)
+					gocv.Resize(img, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault)
 					r.ThumbnailData = dst // 缩略图
 					r.CoverData = img     // 原图
 
@@ -265,16 +265,16 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			//CoverData:     nil,
 		}
 
-		// 取前100帧
-		for i := 0; i < 100; i++ {
+		//
+		for i := 0; i < 200; i++ {
 
 			ok := webcam.Read(&img)
 			if ok {
 
 				if !img.Empty() {
 
-					// 跳过第一帧
-					if i == 0 {
+					// 跳过第50帧，也就是 防止黑色
+					if i <= 50 {
 						continue
 					}
 
