@@ -3,6 +3,7 @@ package image
 import (
 	"fmt"
 	"image"
+	"io"
 	"path"
 	"strings"
 
@@ -318,4 +319,48 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 	return nil, nil // 这个地方应该不会执行到
 
+}
+
+// DetectFileMime 根据文件输入路径进行检查 文件类型
+func DetectFileMimeByPath(fileInPath string) (string, error) {
+	if fileInPath == "" || strings.TrimSpace(fileInPath) == "" {
+		return "", ErrFilePathInvalid
+	}
+
+	if !file.Exists(fileInPath) {
+		return "", ErrFileNotExist
+	}
+
+	if file.IsDir(fileInPath) {
+		return "", ErrNotSupportDirectory
+	}
+
+	if !file.IsFile(fileInPath) {
+		return "", ErrIsNotFile // 应该不会发生
+	}
+
+	m, err := file.DetectFile(fileInPath)
+	if err != nil {
+		return "", ErrNotSupportFileCheckMimetype // 不支持的文件类型检查 ,只有检查到了才可以
+	}
+	return m.String(), nil
+
+}
+
+// DetectFileMimeByByte 可直接传递 文件切片的一部分内容 ,例如 文件开始的 256个字节
+func DetectFileMimeByByte(src []byte) (string, error) {
+	m, err := file.Detect(src)
+	if err != nil {
+		return "", ErrNotSupportFileCheckMimetype // 不支持的文件类型检查 ,只有检查到了才可以
+	}
+	return m.String(), nil
+}
+
+// DetectReader 从 reader 里读取 ,返回文件类型
+func DetectReader(r io.Reader) (string, error) {
+	m, err := file.DetectReader(r)
+	if err != nil {
+		return "", err
+	}
+	return m.String(), nil
 }

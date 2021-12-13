@@ -1,8 +1,11 @@
 package image
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
+
+	"github.com/gabriel-vasile/mimetype"
 )
 
 func TestSave2Jpg(t *testing.T) {
@@ -44,5 +47,41 @@ func TestImageAndSave(t *testing.T) {
 	}
 
 	fmt.Println(f.ThumbnailImgPath, f.CoverImgPath)
+
+}
+
+func TestDetectFileMimeByPath(t *testing.T) {
+
+	filePath := "/Users/apple/workspace/go_concurrency/doc/concurrency_in_go/Concurrency-in-Go.pdf" // pdf 测试
+	m, err := DetectFileMimeByPath(filePath)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(m)
+
+}
+
+func TestDetectFileMimeByByte(t *testing.T) {
+
+	testBytes := []byte("This random text has a MIME type of text/plain; charset=utf-8.")
+	m, err := DetectFileMimeByByte(testBytes)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(m)
+
+}
+
+func TestDetectReader(t *testing.T) {
+
+	testBytes := []byte("This random text has a MIME type of text/plain; charset=utf-8.")
+	m, err := mimetype.DetectReader(bytes.NewReader(testBytes))
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(m)
 
 }
