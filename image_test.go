@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gabriel-vasile/mimetype"
+	"github.com/penglonghua/go-image/internal/file"
 )
 
 func TestSave2Jpg(t *testing.T) {
@@ -77,7 +77,7 @@ func TestDetectFileMimeByByte(t *testing.T) {
 func TestDetectReader(t *testing.T) {
 
 	testBytes := []byte("This random text has a MIME type of text/plain; charset=utf-8.")
-	m, err := mimetype.DetectReader(bytes.NewReader(testBytes))
+	m, err := file.DetectReader(bytes.NewReader(testBytes))
 	if err != nil {
 		fmt.Print(err)
 		return
