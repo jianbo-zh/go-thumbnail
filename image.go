@@ -226,7 +226,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 		defer dst.Close() //  FIXME: 清空指针和数据 ,一旦清空，返回值就没有了, 如果不清空，内存会存在泄漏
 
 		// 缩略图
-		gocv.Resize(src, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault) // 按原比例缩放， 缩放后的长 ,宽为 原来的25%
+		gocv.Resize(src, &dst, image.Point{}, 0.01, 0.01, gocv.InterpolationDefault) // 按原比例缩放， 缩放后的长 ,宽为 原来的25%
 		//gocv.Resize(src, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
 
 		destThumbnailPath := path.Join(outputDir, "xhh.jpg") // 特定的文件名
@@ -282,7 +282,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 					dst := gocv.NewMat()
 
 					// 缩略图
-					gocv.Resize(img, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault)
+					gocv.Resize(img, &dst, image.Point{}, 0.01, 0.01, gocv.InterpolationDefault)
 					//gocv.Resize(img, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
 					r.ThumbnailData = dst // 缩略图
 					r.CoverData = img     // 原图
