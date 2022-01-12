@@ -16,7 +16,8 @@ func TestDetectFile(t *testing.T) {
 	// 测试图片类型
 	//filePath := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 	//filePath := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv/apple.jpg"
-	filePath := "/Users/apple/workspace/go_concurrency/doc/concurrency_in_go/Concurrency-in-Go.pdf"
+	//filePath := "/Users/apple/workspace/go_concurrency/doc/concurrency_in_go/Concurrency-in-Go.pdf"
+	filePath := "/Users/apple/Desktop/1635838469402.png"
 	m, err := DetectFile(filePath)
 	if err != nil {
 		fmt.Print(err)

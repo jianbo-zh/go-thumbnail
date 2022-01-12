@@ -6,7 +6,7 @@ import "errors"
 var ErrNotSupportFileCheckMimetype = errors.New("not support file check mimetype") //  未支持的文件类型检查 [文件类型检查的时候失败]
 
 //  ErrNotSupportFile4Img is  returned when can't get a pic from the file, 比如 从 mp3文件里进行截图
-var ErrNotSupportFile4Img = errors.New("can get a pic from this type file")
+var ErrNotSupportFile4Img = errors.New("can't get a pic from this type file")
 
 // ErrNotSupportFileImg is returned when the file is checked but can't  be treated
 var ErrNotSupportFileImg = errors.New("not support file type img")

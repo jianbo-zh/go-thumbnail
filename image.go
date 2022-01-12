@@ -215,6 +215,14 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 	mimeType := m.String()
 
 	if strings.HasPrefix(mimeType, "image") {
+
+		// 添加处理 heic/heif 的处理
+		if mimeType == "image/heic" || mimeType == "image/heif" {
+			tempJpeg := path.Join(outputDir, "xhh.jpg")
+			HeicConvert2jpg(fileInPath, tempJpeg) //
+			fileInPath = tempJpeg
+		}
+
 		// opencv截图 缩略图
 		src := gocv.IMRead(fileInPath, gocv.IMReadColor)
 		if src.Empty() {
@@ -329,6 +337,8 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 // 对于一般图片，比例没有非常失调的 情况下， 最短一边保持 200,另外一边保持常宽比例不变
 // 对于特殊比例失调的图片，处理下 最短一遍也是 200, 最常一边 从中切图 (保持 长的部分为 9:16 的比例， 那么就是  356)
 //  比例失调定义为 最大边/最短边 >= 4倍以上
+// 1. 问题， 应该是 切图 而不是 缩放这个地方的 原始意图 需要修正一下
+// 2. 因为 该方法调用之后，需要继续使用 dst ，所以这个地方 应该是 返回的 指针类型.
 func Resize(src gocv.Mat, dst gocv.Mat) {
 
 	const (
@@ -401,6 +411,88 @@ func Resize(src gocv.Mat, dst gocv.Mat) {
 			y = int(float64(x) * maxDividemin)
 		}
 		gocv.Resize(src, &dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
+	}
+
+}
+
+// 1. ResizeROI  对特定区域进行 切片，而不是 全部进行缩略图
+// 2. 该方法调用后，需要继续用到 dst, 所以需要用到指针
+// 3. 其他的逻辑 跟 Resize 是一样的
+// FIXME 未测试通过 暂时不提交....
+func ResizeROI(src *gocv.Mat, dst *gocv.Mat) {
+
+	const (
+		Min         = 200 // 最短一边是 200
+		DefaultMax  = 356 // 为  9:16 = 200:356
+		DivideTimes = 4.0 // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
+	)
+
+	//Width Height
+	srcWidth := src.Cols()
+	srcHeight := src.Rows()
+
+	srcMax, srcMin := srcWidth, srcHeight
+	var horizontal bool = true // 默认是 横的  // （vertical  竖）
+	if srcWidth < srcHeight {
+		srcMax, srcMin = srcHeight, srcWidth
+		horizontal = false // 竖的 照片
+	}
+
+	// 获取 最大值，和最小值
+	// 调试信息
+	//fmt.Printf("宽: %d , 高 : %d\n", srcWidth, srcHeight)
+	//fmt.Printf("最大值: %d , 最小值 : %d\n", srcMax, srcMin)
+	//if horizontal {
+	//	fmt.Println("横图")
+	//} else {
+	//	fmt.Println("竖图")
+	//}
+
+	var maxDividemin float64 = float64(srcMax) / float64(srcMin)
+	//fmt.Printf("最长边/最短边 比例 %v\n", maxDividemin)
+	if maxDividemin >= DivideTimes {
+		//fmt.Println("比例失调")
+		// 需要保持 9:16 的比例 , 也就是  200: 365 (最短一边是  200, 最长一一遍是  365)
+
+		if srcMax <= DefaultMax { //  最长一遍小于 365， 无法处理, 直接返回 原始图片
+			dst = src
+		} else {
+
+			x, y := Min, DefaultMax // 竖的照片
+			if horizontal {
+				x, y = DefaultMax, Min
+			}
+
+			// --------------
+			// FIXME: 潜在问题，该方法返回后 数据丢失问题 后面可以在继续测试一下 为什么会丢的问题 ,单个方法不会丢，方法组合在一起使用会丢失
+			//fmt.Println("需要截取的 矩型 ", x, y)
+			croppedMat := src.Region(image.Rect(0, 0, x, y))
+			dstClone := croppedMat.Clone() // 如果原始的 src 丢失这个地方也失效了
+			dst = &dstClone
+			////dst = croppedMat // 如果原始的 src 丢失这个地方也失效了
+			////dst, _ = gocv.NewMatFromBytes(croppedMat.Rows(), croppedMat.Cols(), croppedMat.Type(), croppedMat.ToBytes())
+			//fmt.Println("处理后的图片", len(dst.ToBytes()))
+			// ----------------
+			//gocv.Resize(src, &dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
+
+		}
+
+	} else {
+		// 比例不失调
+		x, y := srcWidth, srcHeight
+
+		if horizontal { // 横的照片
+
+			y = Min //  必须先确定
+			x = int(float64(y) * maxDividemin)
+
+		} else { // 竖的照片
+			x = Min //  必须先确定
+			y = int(float64(x) * maxDividemin)
+		}
+		fmt.Println(src.Empty())
+		fmt.Println(dst.Empty())
+		gocv.Resize(*src, dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
 	}
 
 }
