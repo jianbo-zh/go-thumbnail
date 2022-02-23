@@ -342,7 +342,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 func Resize(src gocv.Mat, dst gocv.Mat) {
 
 	const (
-		Min         = 200 // 最短一边是 200
+		Min         = 800 // 最短一边是 200  原参数 200 ---> 800
 		DefaultMax  = 356 // 为  9:16 = 200:356
 		DivideTimes = 4.0 // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
 	)

@@ -40,8 +40,8 @@ func TestImageAndSave(t *testing.T) {
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 
-	//srcFile := "/Users/apple/Desktop/video/bafybeic5x7c6bv56t7kg25y57ohmm7ffnfdmleq423ln3xvh4xtll5tpjm.mp4"
-	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/other/heif/1.heic"
+	//srcFile := "/Users/apple/Desktop/bafybeiezq6jb7mptlqxtzvbwj2n257h6jbse24vxr66sc4gcd4na6kvpau.heic"
+	srcFile := "/Users/apple/Downloads/IMG_0256.JPG"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/1.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
