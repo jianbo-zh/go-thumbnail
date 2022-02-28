@@ -339,12 +339,13 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 //  比例失调定义为 最大边/最短边 >= 4倍以上
 // 1. 问题， 应该是 切图 而不是 缩放这个地方的 原始意图 需要修正一下
 // 2. 因为 该方法调用之后，需要继续使用 dst ，所以这个地方 应该是 返回的 指针类型.
+// FIXME 最小边为 800, 其他边等比缩放
 func Resize(src gocv.Mat, dst gocv.Mat) {
 
 	const (
-		Min         = 800 // 最短一边是 200  原参数 200 ---> 800
-		DefaultMax  = 356 // 为  9:16 = 200:356
-		DivideTimes = 4.0 // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
+		Min         = 800  // 最短一边是 200  原参数 200 ---> 800
+		DefaultMax  = 1200 // 为  9:16 = 800:356
+		DivideTimes = 4.0  // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
 	)
 
 	//Width Height
@@ -356,6 +357,10 @@ func Resize(src gocv.Mat, dst gocv.Mat) {
 	if srcWidth < srcHeight {
 		srcMax, srcMin = srcHeight, srcWidth
 		horizontal = false // 竖的 照片
+	}
+
+	if srcMin <= Min {
+		return // 小于 最小遍就不用处理了
 	}
 
 	// 获取 最大值，和最小值
@@ -374,28 +379,43 @@ func Resize(src gocv.Mat, dst gocv.Mat) {
 		//fmt.Println("比例失调")
 		// 需要保持 9:16 的比例 , 也就是  200: 365 (最短一边是  200, 最长一一遍是  365)
 
-		if srcMax <= DefaultMax { //  最长一遍小于 365， 无法处理, 直接返回 原始图片
-			dst = src
-		} else {
+		//if srcMax <= DefaultMax { //  最长一遍小于 365， 无法处理, 直接返回 原始图片
+		//	dst = src
+		//} else {
+		//
+		//	x, y := Min, DefaultMax // 竖的照片
+		//	if horizontal {
+		//		x, y = DefaultMax, Min
+		//	}
+		//
+		//	// --------------
+		//	// FIXME: 潜在问题，该方法返回后 数据丢失问题 后面可以在继续测试一下 为什么会丢的问题 ,单个方法不会丢，方法组合在一起使用会丢失
+		//	//fmt.Println("需要截取的 矩型 ", x, y)
+		//	//croppedMat := src.Region(image.Rect(0, 0, x, y))
+		//	//dst = croppedMat.Clone() // 如果原始的 src 丢失这个地方也失效了
+		//	////dst = croppedMat // 如果原始的 src 丢失这个地方也失效了
+		//	////dst, _ = gocv.NewMatFromBytes(croppedMat.Rows(), croppedMat.Cols(), croppedMat.Type(), croppedMat.ToBytes())
+		//	//fmt.Println("处理后的图片", len(dst.ToBytes()))
+		//	// ----------------
+		//
+		//	gocv.Resize(src, &dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
+		//
+		//}
 
-			x, y := Min, DefaultMax // 竖的照片
-			if horizontal {
-				x, y = DefaultMax, Min
-			}
+		// 不考虑最大边限制
+		x, y := srcWidth, srcHeight
 
-			// --------------
-			// FIXME: 潜在问题，该方法返回后 数据丢失问题 后面可以在继续测试一下 为什么会丢的问题 ,单个方法不会丢，方法组合在一起使用会丢失
-			//fmt.Println("需要截取的 矩型 ", x, y)
-			//croppedMat := src.Region(image.Rect(0, 0, x, y))
-			//dst = croppedMat.Clone() // 如果原始的 src 丢失这个地方也失效了
-			////dst = croppedMat // 如果原始的 src 丢失这个地方也失效了
-			////dst, _ = gocv.NewMatFromBytes(croppedMat.Rows(), croppedMat.Cols(), croppedMat.Type(), croppedMat.ToBytes())
-			//fmt.Println("处理后的图片", len(dst.ToBytes()))
-			// ----------------
+		if horizontal { // 横的照片
 
-			gocv.Resize(src, &dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
+			y = Min //  必须先确定
+			x = int(float64(y) * maxDividemin)
 
+		} else { // 竖的照片
+			x = Min //  必须先确定
+			y = int(float64(x) * maxDividemin)
 		}
+
+		gocv.Resize(src, &dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
 
 	} else {
 		// 比例不失调
