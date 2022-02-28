@@ -238,12 +238,28 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 		// 缩略图
 		//gocv.Resize(src, &dst, image.Point{}, 0.05, 0.05, gocv.InterpolationDefault) // 图片是 0.05
 		//gocv.Resize(src, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
-		Resize(src, dst)
+
+		srcWidth := src.Cols()
+		srcHeight := src.Rows()
+
+		srcMax, srcMin := srcWidth, srcHeight
+		if srcWidth < srcHeight {
+			srcMax, srcMin = srcHeight, srcWidth
+		}
+
+		fmt.Println(srcMax, srcMin)
 
 		destThumbnailPath := path.Join(outputDir, "xhh.jpg") // 特定的文件名
+		if srcMin <= Min {
+			if ok := gocv.IMWrite(destThumbnailPath, src); !ok {
+				return nil, ErrSave2Jpg
+			}
+		} else {
+			Resize(src, dst)
 
-		if ok := gocv.IMWrite(destThumbnailPath, dst); !ok {
-			return nil, ErrSave2Jpg
+			if ok := gocv.IMWrite(destThumbnailPath, dst); !ok {
+				return nil, ErrSave2Jpg
+			}
 		}
 
 		r := &FileResult{
@@ -333,6 +349,12 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 }
 
+const (
+	Min         = 800  // 最短一边是 200  原参数 200 ---> 800
+	DefaultMax  = 1200 // 为  9:16 = 800:356
+	DivideTimes = 4.0  // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
+)
+
 // 图片缩放要求:
 // 对于一般图片，比例没有非常失调的 情况下， 最短一边保持 200,另外一边保持常宽比例不变
 // 对于特殊比例失调的图片，处理下 最短一遍也是 200, 最常一边 从中切图 (保持 长的部分为 9:16 的比例， 那么就是  356)
@@ -341,12 +363,6 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 // 2. 因为 该方法调用之后，需要继续使用 dst ，所以这个地方 应该是 返回的 指针类型.
 // FIXME 最小边为 800, 其他边等比缩放
 func Resize(src gocv.Mat, dst gocv.Mat) {
-
-	const (
-		Min         = 800  // 最短一边是 200  原参数 200 ---> 800
-		DefaultMax  = 1200 // 为  9:16 = 800:356
-		DivideTimes = 4.0  // 最长一边/最短一边的 比例， 超过此比例，定义为 失调 4 倍定义为
-	)
 
 	//Width Height
 	srcWidth := src.Cols()
@@ -360,7 +376,9 @@ func Resize(src gocv.Mat, dst gocv.Mat) {
 	}
 
 	if srcMin <= Min {
+		//dst = src.Clone()
 		return // 小于 最小遍就不用处理了
+
 	}
 
 	// 获取 最大值，和最小值
