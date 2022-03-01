@@ -44,6 +44,23 @@ docker pull gocv/opencv:4.5.4-gpu-cuda-10
 
 ```
 
+how to test in docker.
+```shell
+docker run -v /Users/apple/workspace_stariverpool/go-image:/Users/apple/workspace_stariverpool/go-image -it   gocv/opencv:4.5.4 bash
+
+cd /Users/apple/workspace_stariverpool/go-image
+go mod tidy
+
+go test -v -run=TestImageAndSave  .
+
+```
 
 
+这个地方还得检查一下.
+```shell
+git tag -a v0.0.8
+git commit 
+git push
+
+```
 

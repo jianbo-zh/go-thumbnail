@@ -292,7 +292,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			//CoverData:     nil,
 		}
 
-		for i := 0; i < 200; i++ {
+		for i := 0; i < 2000; i++ {
 
 			ok := webcam.Read(&img)
 			if ok {
@@ -312,27 +312,60 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 					//gocv.Resize(img, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault) // 视频暂时确定是 0.25
 					//gocv.Resize(img, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
 
-					Resize(img, dst)
-
-					r.ThumbnailData = dst // 缩略图
-					r.CoverData = img     // 原图
-
 					destThumbnailPath := path.Join(outputDir, "xhh.jpg") // 特定的文件名
 
-					if ok := gocv.IMWrite(destThumbnailPath, dst); !ok {
-						continue
+					srcWidth := img.Cols()
+					srcHeight := img.Rows()
+
+					srcMax, srcMin := srcWidth, srcHeight
+					if srcWidth < srcHeight {
+						srcMax, srcMin = srcHeight, srcWidth
 					}
-					r.ThumbnailImgPath = destThumbnailPath
 
-					destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
-					if ok := gocv.IMWrite(destCoverPath, img); !ok {
-						continue
+					fmt.Println(srcMax, srcMin)
+					if srcMin <= Min {
+						if ok := gocv.IMWrite(destThumbnailPath, img); !ok {
+							continue
+						}
+
+						r.ThumbnailData = dst // 缩略图
+						r.CoverData = img     // 原图
+
+						r.ThumbnailImgPath = destThumbnailPath
+
+						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
+						if ok := gocv.IMWrite(destCoverPath, img); !ok {
+							continue
+						}
+						r.CoverImgPath = destCoverPath
+
+						dst.Close()
+
+						break
+
+					} else {
+						Resize(img, dst)
+
+						r.ThumbnailData = dst // 缩略图
+						r.CoverData = img     // 原图
+
+						if ok := gocv.IMWrite(destThumbnailPath, dst); !ok {
+							continue
+						}
+						r.ThumbnailImgPath = destThumbnailPath
+
+						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
+						if ok := gocv.IMWrite(destCoverPath, img); !ok {
+							continue
+						}
+						r.CoverImgPath = destCoverPath
+
+						dst.Close()
+
+						break
+
 					}
-					r.CoverImgPath = destCoverPath
 
-					dst.Close()
-
-					break
 				}
 			}
 
