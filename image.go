@@ -223,6 +223,38 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			fileInPath = tempJpeg
 		}
 
+		// 处理下 gif类型的
+		if mimeType == "image/gif" {
+
+			gifs, err := gocv.VideoCaptureFile(fileInPath)
+			if err != nil {
+				fmt.Printf("Error opening video capture device: %v\n", fileInPath)
+				return nil, ErrGoCVInner
+			}
+			defer gifs.Close()
+			img := gocv.NewMat()
+
+			for {
+
+				if ok := gifs.Read(&img); !ok {
+					continue
+				}
+				if img.Empty() {
+					continue
+				}
+
+				tempJpeg := path.Join(outputDir, "xhh.jpg")
+				ok := gocv.IMWrite(tempJpeg, img)
+
+				if ok {
+					fileInPath = tempJpeg
+					break //
+				}
+
+			}
+
+		}
+
 		// opencv截图 缩略图
 		src := gocv.IMRead(fileInPath, gocv.IMReadColor)
 		if src.Empty() {

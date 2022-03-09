@@ -34,11 +34,13 @@ func TestSave2Jpg(t *testing.T) {
 
 func TestImageAndSave(t *testing.T) {
 
-	srcFile := "//Users/apple/视频/科技地球粒子mkv.mkv"
+	//srcFile := "//Users/apple/视频/科技地球粒子mkv.mkv"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/1.png"
 
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
+
+	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/mimetype/gif.gif"
 
 	//srcFile := "/Users/apple/Desktop/bafybeiezq6jb7mptlqxtzvbwj2n257h6jbse24vxr66sc4gcd4na6kvpau.heic"
 	//srcFile := "/Users/apple/Desktop/压缩后/五牛图-166x25.jpg"

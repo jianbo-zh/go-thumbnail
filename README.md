@@ -61,6 +61,7 @@ go test -v -run=TestImageAndSave  .
 git tag -a v0.0.8
 git commit 
 git push
+git push --tags
 
 ```
 
