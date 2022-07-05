@@ -26,3 +26,5 @@ output3
 output4
 output5
 testdata/other/mov/
+
+testdata/bad_gif/*

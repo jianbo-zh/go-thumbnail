@@ -234,7 +234,15 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			defer gifs.Close()
 			img := gocv.NewMat()
 
+			// FIXME: 需要处理退出 5次循环
+			var readCount = 0
 			for {
+
+				readCount++
+
+				if readCount == 5 { // 退出
+					return nil, ErrGoCVGIF
+				}
 
 				if ok := gifs.Read(&img); !ok {
 					continue

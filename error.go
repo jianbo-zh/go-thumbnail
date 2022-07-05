@@ -29,6 +29,8 @@ var ErrIsNotFile = errors.New("err err err !!! this is not  file")
 // ErrGoCVInner , for example, gocv inner error is returned when the file is  heif format
 var ErrGoCVInner = errors.New("go cv lib is error")
 
+var ErrGoCVGIF = errors.New("gif is error")
+
 // ErrSave2Jpg , 保存文件出错了
 var ErrSave2Jpg = errors.New("save jpg file error")
 

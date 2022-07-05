@@ -40,7 +40,8 @@ func TestImageAndSave(t *testing.T) {
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
 
-	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/mimetype/gif.gif"
+	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/mimetype/gif.gif"
+	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/bad_gif/upload.gif"
 
 	//srcFile := "/Users/apple/Desktop/bafybeiezq6jb7mptlqxtzvbwj2n257h6jbse24vxr66sc4gcd4na6kvpau.heic"
 	//srcFile := "/Users/apple/Desktop/压缩后/五牛图-166x25.jpg"
@@ -64,8 +65,8 @@ func TestImageAndSave(t *testing.T) {
 
 func TestImageResize(t *testing.T) {
 	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/opencv-logo.png"
-	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/1.png"
-	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
+	srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/1.png"
+	//srcFile := "/Users/apple/workspace_stariverpool/go-image/testdata/2.png"
 
 	srcMat := gocv.IMRead(srcFile, gocv.IMReadColor)
 	defer srcMat.Close()
