@@ -1,4 +1,4 @@
-module github.com/jinabo-zh/go-thumbnail
+module github.com/jianbo-zh/go-thumbnail
 
 go 1.16
 
