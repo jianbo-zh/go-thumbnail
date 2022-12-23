@@ -1,4 +1,4 @@
-module github.com/penglonghua/go-image
+module github.com/jinabo-zh/go-thumbnail
 
 go 1.16
 

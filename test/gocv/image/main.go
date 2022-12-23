@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/penglonghua/go-image"
+	image "github.com/jinabo-zh/go-thumbnail"
 )
 
 func main() {

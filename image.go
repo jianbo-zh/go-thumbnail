@@ -8,7 +8,7 @@ import (
 
 	"gocv.io/x/gocv"
 
-	"github.com/penglonghua/go-image/internal/file"
+	"github.com/jinabo-zh/go-thumbnail/internal/file"
 )
 
 type FileResult struct {
