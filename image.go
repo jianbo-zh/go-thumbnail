@@ -339,6 +339,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 			ok := webcam.Read(&img)
 			if ok {
+				fmt.Println("--- ok ok ok ---", i)
 
 				if !img.Empty() {
 
