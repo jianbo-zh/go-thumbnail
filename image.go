@@ -321,9 +321,11 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			return nil, ErrGoCVInner
 		}
 		defer webcam.Close()
+		fmt.Println("1111")
 
 		img := gocv.NewMat()
 		defer img.Close()
+		fmt.Println("2222")
 
 		r := &FileResult{
 			SrcPath:  fileInPath,
@@ -332,7 +334,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			//CoverData:     nil,
 		}
 
-		for i := 0; i < 2000; i++ {
+		for i := 0; i < 10; i++ {
 
 			ok := webcam.Read(&img)
 			if ok {
@@ -403,22 +405,19 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 						dst.Close()
 
 						break
-
 					}
-
 				}
-			}
 
+			} else {
+				fmt.Println("3333")
+			}
 		}
 
 		return r, nil
-
-	} else {
-		// 其他的不支持
-		return nil, ErrNotSupportFile4Img // 不能从该文件中获取到 图片, 比如 从mp3文件里，是截不了图的
 	}
 
-	return nil, nil // 这个地方应该不会执行到
+	// 其他的不支持
+	return nil, ErrNotSupportFile4Img // 不能从该文件中获取到 图片, 比如 从mp3文件里，是截不了图的
 
 }
 
