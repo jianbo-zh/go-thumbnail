@@ -334,7 +334,8 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			//CoverData:     nil,
 		}
 
-		for i := 0; i < 10; i++ {
+		for i := 0; i < 2000; i++ {
+			fmt.Println("-------", i)
 
 			ok := webcam.Read(&img)
 			if ok {
@@ -412,6 +413,8 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 				fmt.Println("3333")
 			}
 		}
+
+		fmt.Println("====")
 
 		return r, nil
 	}
