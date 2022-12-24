@@ -1,15 +1,18 @@
 package image
 
 import (
-	"bytes"
 	"image/jpeg"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 
-	"github.com/huydq189/goheif"
+	"github.com/adrium/goheif"
 )
+
+func init() {
+	// 容器需要设置安全编码否则会崩溃
+	goheif.SafeEncoding = true
+}
 
 // Skip Writer for exif writing
 type writerSkipper struct {
@@ -59,7 +62,7 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 	return writer, nil
 }
 
-func HeicConvert2jpgOld(fileIn string, fileOut string) error {
+func HeicConvert2jpg(fileIn string, fileOut string) error {
 
 	fi, err := os.Open(fileIn)
 	if err != nil {
@@ -96,33 +99,6 @@ func HeicConvert2jpgOld(fileIn string, fileOut string) error {
 		log.Printf("Failed to encode %s: %v\n", fileOut, err)
 		return err
 	}
-
-	log.Printf("Convert %s to %s successfully\n", fileIn, fileOut)
-	return nil
-}
-
-func HeicConvert2jpg(fileIn string, fileOut string) error {
-
-	fi, err := os.Open(fileIn)
-	if err != nil {
-		return err
-	}
-	defer fi.Close()
-
-	img, err := goheif.Decode(fi)
-	if err != nil {
-		log.Printf("Failed to parse %s: %v\n", fileIn, err)
-		return err
-	}
-
-	newBuf := new(bytes.Buffer)
-	err = jpeg.Encode(newBuf, img, nil)
-	if err != nil {
-		log.Printf("Failed to encode %s: %v\n", fileOut, err)
-		return err
-	}
-
-	ioutil.WriteFile(fileOut, newBuf.Bytes(), 0644)
 
 	log.Printf("Convert %s to %s successfully\n", fileIn, fileOut)
 	return nil

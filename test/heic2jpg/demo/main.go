@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/huydq189/goheif"
+	"github.com/adrium/goheif"
 )
 
 // Skip Writer for exif writing
