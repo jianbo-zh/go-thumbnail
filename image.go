@@ -219,7 +219,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 		// 添加处理 heic/heif 的处理
 		if mimeType == "image/heic" || mimeType == "image/heif" {
 			tempJpeg := path.Join(outputDir, "xhh.jpg")
-			HeicConvert2jpg(fileInPath, tempJpeg) //
+			HeicConvert2jpg(fileInPath, tempJpeg)
 			fileInPath = tempJpeg
 		}
 
@@ -232,7 +232,9 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 				return nil, ErrGoCVInner
 			}
 			defer gifs.Close()
+
 			img := gocv.NewMat()
+			defer img.Close()
 
 			// FIXME: 需要处理退出 5次循环
 			var readCount = 0
@@ -321,11 +323,9 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			return nil, ErrGoCVInner
 		}
 		defer webcam.Close()
-		fmt.Println("1111")
 
 		img := gocv.NewMat()
 		defer img.Close()
-		fmt.Println("2222")
 
 		r := &FileResult{
 			SrcPath:  fileInPath,
@@ -334,12 +334,10 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 			//CoverData:     nil,
 		}
 
-		for i := 0; i < 2000; i++ {
-			fmt.Println("-------", i)
+		for i := 0; i < 1600; i++ {
 
 			ok := webcam.Read(&img)
 			if ok {
-				fmt.Println("--- ok ok ok ---", i)
 
 				if !img.Empty() {
 
@@ -369,6 +367,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 					fmt.Println(srcMax, srcMin)
 					if srcMin <= Min {
 						if ok := gocv.IMWrite(destThumbnailPath, img); !ok {
+							dst.Close()
 							continue
 						}
 
@@ -379,10 +378,11 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
 						if ok := gocv.IMWrite(destCoverPath, img); !ok {
+							dst.Close()
 							continue
 						}
-						r.CoverImgPath = destCoverPath
 
+						r.CoverImgPath = destCoverPath
 						dst.Close()
 
 						break
@@ -394,28 +394,25 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 						r.CoverData = img     // 原图
 
 						if ok := gocv.IMWrite(destThumbnailPath, dst); !ok {
+							dst.Close()
 							continue
 						}
 						r.ThumbnailImgPath = destThumbnailPath
 
 						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
 						if ok := gocv.IMWrite(destCoverPath, img); !ok {
+							dst.Close()
 							continue
 						}
 						r.CoverImgPath = destCoverPath
 
 						dst.Close()
-
 						break
 					}
 				}
 
-			} else {
-				fmt.Println("3333")
 			}
 		}
-
-		fmt.Println("====")
 
 		return r, nil
 	}
