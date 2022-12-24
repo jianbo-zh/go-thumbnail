@@ -84,7 +84,11 @@ func HeicConvert2jpg(fileIn string, fileOut string) error {
 	}
 	defer fo.Close()
 
-	w, _ := newWriterExif(fo, exif)
+	w, err := newWriterExif(fo, exif)
+	if err != nil {
+		log.Printf("new writer exif error: %v\n", err)
+		return err
+	}
 	err = jpeg.Encode(w, img, nil)
 	if err != nil {
 		log.Printf("Failed to encode %s: %v\n", fout, err)
