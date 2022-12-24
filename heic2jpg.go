@@ -1,8 +1,10 @@
 package image
 
 import (
+	"bytes"
 	"image/jpeg"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -59,8 +61,7 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 
 func HeicConvert2jpg(fileIn string, fileOut string) error {
 
-	fin, fout := fileIn, fileOut
-	fi, err := os.Open(fin)
+	fi, err := os.Open(fileIn)
 	if err != nil {
 		return err
 	}
@@ -68,18 +69,18 @@ func HeicConvert2jpg(fileIn string, fileOut string) error {
 
 	exif, err := goheif.ExtractExif(fi)
 	if err != nil {
-		log.Printf("Warning: no EXIF from %s: %v\n", fin, err)
+		log.Printf("Warning: no EXIF from %s: %v\n", fileIn, err)
 	}
 
 	img, err := goheif.Decode(fi)
 	if err != nil {
-		log.Printf("Failed to parse %s: %v\n", fin, err)
+		log.Printf("Failed to parse %s: %v\n", fileIn, err)
 		return err
 	}
 
-	fo, err := os.OpenFile(fout, os.O_RDWR|os.O_CREATE, 0644)
+	fo, err := os.OpenFile(fileOut, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		log.Printf("Failed to create output file %s: %v\n", fout, err)
+		log.Printf("Failed to create output file %s: %v\n", fileOut, err)
 		return err
 	}
 	defer fo.Close()
@@ -89,12 +90,40 @@ func HeicConvert2jpg(fileIn string, fileOut string) error {
 		log.Printf("new writer exif error: %v\n", err)
 		return err
 	}
-	err = jpeg.Encode(w, img, nil)
+
+	err = jpeg.Encode(w, img, &jpeg.Options{Quality: 100})
 	if err != nil {
-		log.Printf("Failed to encode %s: %v\n", fout, err)
+		log.Printf("Failed to encode %s: %v\n", fileOut, err)
 		return err
 	}
 
-	log.Printf("Convert %s to %s successfully\n", fin, fout)
+	log.Printf("Convert %s to %s successfully\n", fileIn, fileOut)
+	return nil
+}
+
+func HeicConvert2jpgNew(fileIn string, fileOut string) error {
+
+	fi, err := os.Open(fileIn)
+	if err != nil {
+		return err
+	}
+	defer fi.Close()
+
+	img, err := goheif.Decode(fi)
+	if err != nil {
+		log.Printf("Failed to parse %s: %v\n", fileIn, err)
+		return err
+	}
+
+	newBuf := new(bytes.Buffer)
+	err = jpeg.Encode(newBuf, img, nil)
+	if err != nil {
+		log.Printf("Failed to encode %s: %v\n", fileOut, err)
+		return err
+	}
+
+	ioutil.WriteFile(fileOut, newBuf.Bytes(), 0644)
+
+	log.Printf("Convert %s to %s successfully\n", fileIn, fileOut)
 	return nil
 }
