@@ -59,7 +59,7 @@ func newWriterExif(w io.Writer, exif []byte) (io.Writer, error) {
 	return writer, nil
 }
 
-func HeicConvert2jpg(fileIn string, fileOut string) error {
+func HeicConvert2jpgOld(fileIn string, fileOut string) error {
 
 	fi, err := os.Open(fileIn)
 	if err != nil {
@@ -101,7 +101,7 @@ func HeicConvert2jpg(fileIn string, fileOut string) error {
 	return nil
 }
 
-func HeicConvert2jpgNew(fileIn string, fileOut string) error {
+func HeicConvert2jpg(fileIn string, fileOut string) error {
 
 	fi, err := os.Open(fileIn)
 	if err != nil {
