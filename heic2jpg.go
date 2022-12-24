@@ -69,7 +69,6 @@ func HeicConvert2jpg(fileIn string, fileOut string) error {
 	exif, err := goheif.ExtractExif(fi)
 	if err != nil {
 		log.Printf("Warning: no EXIF from %s: %v\n", fin, err)
-		return err
 	}
 
 	img, err := goheif.Decode(fi)

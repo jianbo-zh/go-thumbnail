@@ -219,7 +219,10 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 		// 添加处理 heic/heif 的处理
 		if mimeType == "image/heic" || mimeType == "image/heif" {
 			tempJpeg := path.Join(outputDir, "xhh.jpg")
-			HeicConvert2jpg(fileInPath, tempJpeg)
+			err := HeicConvert2jpg(fileInPath, tempJpeg)
+			if err != nil {
+				fmt.Printf("heic convert to jpg error: %v", err)
+			}
 			fileInPath = tempJpeg
 		}
 
