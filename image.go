@@ -5,6 +5,7 @@ import (
 	"image"
 	"path"
 	"strings"
+	"time"
 
 	"gocv.io/x/gocv"
 
@@ -217,7 +218,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 		// 添加处理 heic/heif 的处理
 		if mimeType == "image/heic" || mimeType == "image/heif" {
-			tempJpeg := path.Join(outputDir, "xhh.jpg")
+			tempJpeg := path.Join(outputDir, thumbnailFileName())
 			err := HeicConvert2jpg(fileInPath, tempJpeg)
 			if err != nil {
 				fmt.Printf("heic convert to jpg error: %v", err)
@@ -255,7 +256,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 					continue
 				}
 
-				tempJpeg := path.Join(outputDir, "xhh.jpg")
+				tempJpeg := path.Join(outputDir, thumbnailFileName())
 				ok := gocv.IMWrite(tempJpeg, img)
 
 				if ok {
@@ -293,7 +294,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 		fmt.Println(srcMax, srcMin)
 
-		destThumbnailPath := path.Join(outputDir, "xhh.jpg") // 特定的文件名
+		destThumbnailPath := path.Join(outputDir, thumbnailFileName()) // 特定的文件名
 		if srcMin <= Min {
 			if ok := gocv.IMWrite(destThumbnailPath, src); !ok {
 				return nil, ErrSave2Jpg
@@ -356,7 +357,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 					//gocv.Resize(img, &dst, image.Point{}, 0.25, 0.25, gocv.InterpolationDefault) // 视频暂时确定是 0.25
 					//gocv.Resize(img, &dst, image.Pt(120, 68), 0, 0, gocv.InterpolationDefault) //两种缩放方式
 
-					destThumbnailPath := path.Join(outputDir, "xhh.jpg") // 特定的文件名
+					destThumbnailPath := path.Join(outputDir, thumbnailFileName()) // 特定的文件名
 
 					srcWidth := img.Cols()
 					srcHeight := img.Rows()
@@ -378,7 +379,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 
 						r.ThumbnailImgPath = destThumbnailPath
 
-						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
+						destCoverPath := path.Join(outputDir, coverFileName()) // 特定的文件名
 						if ok := gocv.IMWrite(destCoverPath, img); !ok {
 							dst.Close()
 							continue
@@ -401,7 +402,7 @@ func ImageAndSave(fileInPath string, outputDir string) (*FileResult, error) {
 						}
 						r.ThumbnailImgPath = destThumbnailPath
 
-						destCoverPath := path.Join(outputDir, "xcc.jpg") // 特定的文件名
+						destCoverPath := path.Join(outputDir, coverFileName()) // 特定的文件名
 						if ok := gocv.IMWrite(destCoverPath, img); !ok {
 							dst.Close()
 							continue
@@ -610,4 +611,12 @@ func ResizeROI(src *gocv.Mat, dst *gocv.Mat) {
 		gocv.Resize(*src, dst, image.Pt(x, y), 0, 0, gocv.InterpolationCubic)
 	}
 
+}
+
+func thumbnailFileName() string {
+	return fmt.Sprintf("xhh-%d.jpg", time.Now().UnixMicro())
+}
+
+func coverFileName() string {
+	return fmt.Sprintf("xcc-%d.jpg", time.Now().UnixMicro())
 }
